@@ -10,7 +10,10 @@ app.engine('handlebars', handlebars.engine);
 
 app.set('view engine', 'handlebars');
 
+var mongodb = require('mongodb');
+
 app.set('port', process.env.PORT || 3000);
+
 
 
 app.get('/', function (req, res) {
@@ -23,6 +26,36 @@ app.get('/search', function (req, res) {
 
 app.get('/about', function (req, res) {
 	res.render('about');
+});
+
+app.get('/thelist', function (req, res) {
+	var MongoClient = mongodb.MongoClient;
+	var url = 'mongodb://localhost:27017/sampsite';
+
+	MongoClient.connect(url, function (err, db) {
+		if(err) {
+			console.log('unable to connect to the server', err);
+		}
+		else {
+			console.log('Connection established');
+
+			var collection = db.collection('students');
+
+			collection.find({}).toArray(function (err, result) {
+				if(err) {
+					res.send(err);
+				}
+				else if (result.length) {
+					res.send(result);
+				}
+				else {
+					res.send('no documents found');
+				}
+
+				db.close();
+			});
+		}
+	});
 });
 
 
