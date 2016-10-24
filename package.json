@@ -12,7 +12,7 @@
   "dependencies": {
     "express": "^4.14.0",
     "express-handlebars": "^3.0.0",
-    "spotify-web-api-js": "^0.19.3",
-    "spotify-web-api-node": "^2.3.5"
+    "kerberos": "~0.0.17",
+    "mongodb": "~2.0.33"
   }
 }
