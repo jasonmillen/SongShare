@@ -1,0 +1,40 @@
+<script src="/test.js"></script>
+<script src="/bundle.js"></script>
+<script src="/spotify-web-api.js"></script>
+
+<div class="container" class="form-horizontal" role="form"
+enctype="multipart/form-data">
+  <h2>Search for a track</h2>
+  <form id="songSearchForm">
+    <div class="form-group">
+      <label for="artist">Artist</label>
+      <input type="text" class="form-control" id="artist" placeholder="Enter name of artist">
+    </div>
+    <div class="form-group">
+      <label for="track">Track</label>
+      <input type="text" class="form-control" id="track" placeholder="Enter name of track">
+    </div>
+    <button type="submit" class="btn btn-default" id="search">Search</button>
+  </form>
+</div>
+
+<br/>
+
+<iframe id="song" src="https://embed.spotify.com/?uri=spotify:track:5JunxkcjfCYcY7xJ29tLai" frameborder="0" allowtransparency="true"></iframe>
+
+<script type="text/javascript">
+  $('#search').on('click', function (e) {
+    e.preventDefault();
+    var searchString = "https://api.spotify.com/v1/search?q=";
+    var artist = document.getElementById('artist').value;
+    var track = document.getElementById('track').value;
+    searchString += artist + "+" + track + "&type=track&limit=1";
+
+    $.get(searchString, function (data, status) {
+      var elem = document.getElementById('song');
+      elem.src = "http://embed.spotify.com/?uri=spotify:track:" + data.tracks.items[0].id;
+
+    });
+  });
+
+</script>
