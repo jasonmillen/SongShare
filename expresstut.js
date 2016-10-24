@@ -2,6 +2,10 @@ var express = require('express');
 
 var app = express();
 
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended:true }));
+
+
 app.disable('x-powered-by');
 
 var handlebars = require('express-handlebars').create({defaultLayout:'main'});
@@ -56,6 +60,41 @@ app.get('/thelist', function (req, res) {
 			});
 		}
 	});
+});
+
+app.get('/newstudent', function (req, res) {
+	res.render('newstudent');
+});
+
+app.post('/addstudent', function (req, res) {
+	var MongoClient = mongodb.MongoClient;
+	var url = 'mongodb://localhost:27017/sampsite';
+	MongoClient.connect(url, function (err, db) {
+		if(err) {
+			console.log('unable to connect to server', err);
+		}
+		else {
+			console.log('connected to server');
+
+			var collection = db.collection('students');
+
+			console.log(req.body);
+
+			var student1 = {student: req.body.name, gpa: req.body.gpa};
+
+			collection.insert([student1], function (err, result) {
+				if(err) {
+					console.log(err);
+				}
+				else {
+					res.redirect("thelist");
+				}
+				db.close();
+			});
+		}
+
+	});
+
 });
 
 
