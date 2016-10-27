@@ -14,9 +14,10 @@ var redirect_uri = 'http://localhost:3000/callback'; // Your redirect uri
 
 //user specific stuff?
 var user_info = {
-	user_id: null,
-	user_access_token: null,
-	user_refresh_token: null
+	id: null,
+	access_token: null,
+	refresh_token: null,
+	name: null
 }
 
 /**
@@ -51,6 +52,7 @@ app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
 var mongodb = require('mongodb');
+var mongodbURL = 'mongodb://localhost:27017/sampsite';
 
 app.set('port', process.env.PORT || 3000);
 
@@ -74,6 +76,31 @@ app.get('/login', function(req, res) {
       redirect_uri: redirect_uri,
       state: state
     }));
+});
+
+app.get('/logout', function(req, res) {
+	user_info.id = null;
+	user_info.access_token = null;
+	user_info.refresh_token = null;
+	user_info.name = null;
+	res.redirect('/');
+});
+
+app.get('/finish_login', function(req, res) {
+
+    var options = {
+      url: 'https://api.spotify.com/v1/me',
+      headers: { 'Authorization': 'Bearer ' + user_info.access_token },
+      json: true
+    };
+
+    request.get(options, function(error, response, body) {
+    	user_info.id = body.id;
+    	user_info.name = body.name;
+    	console.log(body);
+    	res.redirect('/');
+    	console.log('done');
+    });
 });
 
 app.get('/callback', function(req, res) {
@@ -112,28 +139,29 @@ app.get('/callback', function(req, res) {
             refresh_token = body.refresh_token;
 
         //not sure if this is best way to do this
-        user_info.user_access_token = access_token;
-        user_info.user_refresh_token = refresh_token;
+        user_info.access_token = access_token;
+        user_info.refresh_token = refresh_token;
+        console.log(body); 
 
-        var options = {
-          url: 'https://api.spotify.com/v1/me',
-          headers: { 'Authorization': 'Bearer ' + access_token },
-          json: true
-        };
+        // var options = {
+        //   url: 'https://api.spotify.com/v1/me',
+        //   headers: { 'Authorization': 'Bearer ' + access_token },
+        //   json: true
+        // };
 
-        // use the access token to access the Spotify Web API
-        request.get(options, function(error, response, body) {
-        	user_info.user_id = body.id;
-        	console.log(body);
-        });
+        // // use the access token to access the Spotify Web API
+        // // request.get(options, function(error, response, body) {
+        // // 	user_info.user_id = body.id;
+        // // 	user_info.name = body.name;
+        // // 	console.log(body);
+        // // 	//res.redirect('/');
+        // // 	console.log('done');
+        // // });
 
         // we can also pass the token to the browser to make requests from there
 
-        res.redirect('/#' +
-          querystring.stringify({
-            access_token: access_token,
-            refresh_token: refresh_token
-          }));
+        res.redirect('/finish_login');
+    	console.log('before');
       } else {
         res.redirect('/#' +
           querystring.stringify({
@@ -142,6 +170,16 @@ app.get('/callback', function(req, res) {
       }
     });
   }
+});
+
+app.post('/create_group/:groupName', function (req, res) {
+    if(user_info.id == null) { //can't create group if not logged in
+        res.redirect('/');
+    }
+    else {
+        var groupName = res.params.groupName;
+
+    }
 });
 
 app.get('/refresh_token', function(req, res) {

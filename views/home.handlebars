@@ -1,9 +1,11 @@
 <div class="page-header">
-<h3> Welcome to my Express Tutorial </h3>
+<h3> Welcome to Song Share </h3>
 </div>
 
 <div class="user">
-	{{#if user_id}}
-		<div> Logged in as {{ user_id }} </div>
+	{{#if id}}
+		<div> Logged in as {{ id }} </div>
+	{{else}}
+		<div> Log in to see your groups/create a group </div>
 	{{/if}}
 </div>
