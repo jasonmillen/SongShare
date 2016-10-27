@@ -1,0 +1,42 @@
+<Button id="addPlaylist" onClick="addPlaylist()">
+	New Playlist
+</Button>
+
+User id is {{ user_id }}
+<br>
+Access token is {{ user_access_token }}
+
+<script>
+
+	var request_data = {
+		"name": "xxxxxxxxxx",
+		"public": true
+	}
+
+	var user_id = "{{ user_id }}";
+	var user_access_token = "{{ user_access_token }}";
+
+	var searchString = "https://api.spotify.com/v1/users/" + user_id + "/playlists"
+
+	function addPlaylist() {
+		alert(searchString);
+		alert(request_data);
+		$.ajax({
+			type: "POST",
+			url: searchString,
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' + user_access_token
+			},
+			data: JSON.stringify(request_data),
+			contentType: "application/json",
+			dataType: "json",
+			success: function(response) {
+				alert('hi');
+			},
+		});
+		alert('send request');
+
+	}
+
+</script>
