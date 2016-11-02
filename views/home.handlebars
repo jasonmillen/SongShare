@@ -3,8 +3,21 @@
 </div>
 
 <div class="user">
-	{{#if id}}
-		<div> Logged in as {{ id }} </div>
+	{{#if user_info.id}}
+		<div> Logged in as {{ user_info.id }} </div>
+
+		<a href="/create_group" class="btn btn-primary">Create New Group</a>
+
+		{{#if groups}}
+			<div> You have groups: </div>
+			{{#each groups}}
+				<div> {{this.name}} </div>
+			{{/each}}
+
+		{{else}}
+			<div> You have no groups right now </div>
+		{{/if}}
+
 	{{else}}
 		<div> Log in to see your groups/create a group </div>
 	{{/if}}

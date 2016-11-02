@@ -41,6 +41,7 @@ var app = express();
 
 var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended:true }));
+app.use(bodyParser.json());
 
 
 app.disable('x-powered-by');
@@ -52,7 +53,7 @@ app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
 var mongodb = require('mongodb');
-var mongodbURL = 'mongodb://localhost:27017/sampsite';
+var mongodbURL = 'mongodb://localhost:27017/SongShare';
 
 app.set('port', process.env.PORT || 3000);
 
@@ -172,13 +173,60 @@ app.get('/callback', function(req, res) {
   }
 });
 
-app.post('/create_group/:groupName', function (req, res) {
+app.get('/created_group', function (req, res) {
+    res.render('created_group');
+});
+
+app.get('/create_group', function (req, res) {
+    if(user_info.id == null) {
+        res.redirect('/');
+    }
+    else {
+        res.render('create_group', user_info);
+    }
+});
+
+app.post('/create_group', function (req, res) {
     if(user_info.id == null) { //can't create group if not logged in
         res.redirect('/');
     }
     else {
-        var groupName = res.params.groupName;
+        var group_data = {
+            name: req.body.groupname,
+            password: req.body.password
+        };
+        console.log(group_data.name + " - " + group_data.password);
 
+        var MongoClient = mongodb.MongoClient;
+        MongoClient.connect(mongodbURL, function (err, db) {
+            if(err) {
+                console.log('unable to connect to the server', err);
+            }
+            else {
+                console.log('Connection established');
+
+                var collection = db.collection('groups');
+
+                var newGroup = {
+                    creator: user_info.id,
+                    name: group_data.name,
+                    password: group_data.password,
+                    members: [user_info.id]
+                };
+
+                collection.insertOne(newGroup, function (err, result) {
+                    if(err) {
+                        res.send(err);
+                    }
+                    else {
+                        console.log('hi');
+                        res.redirect('/');
+                    }
+
+                    db.close();
+                });
+            }
+        });
     }
 });
 
@@ -214,7 +262,42 @@ app.get('/test', function (req, res) {
 
 
 app.get('/', function (req, res) {
-	res.render('home', user_info);
+    if(user_info.id == null) {
+        var data = {
+            user_info: user_info
+        };
+        res.render('home', data);
+    }
+    else {
+        var MongoClient = mongodb.MongoClient;
+        MongoClient.connect(mongodbURL, function (err, db) {
+            if(err) {
+                console.log('unable to connect to server', err);
+            }
+            else {
+                var collection = db.collection('groups');
+                collection.find({}).toArray(function (err, result) {
+                    if(err) {
+                        res.send(err);
+                    }
+                    else if(result.length) {
+                        var data = {
+                            user_info: user_info,
+                            groups: result
+                        };
+                        res.render('home', data);
+                    }
+                    else {
+                        var data = {
+                            user_info: user_info
+                        };
+                        res.render('home', data);
+                    }
+                });
+            }
+        });
+    }
+
 });
 
 app.get('/search', function (req, res) {

@@ -1,0 +1,59 @@
+<div class="container" class="form-horizontal" role="form"
+enctype="multipart/form-data">
+  <h2>Create A Group</h2>
+  <form id="createGroupForm" method="post" action="/create_group">
+    <div class="form-group">
+      <label for="groupName">Group Name</label>
+      <input name="groupname" type="text" class="form-control" id="groupname" placeholder="Enter name of group">
+    </div>
+    <div id="bad-password"> </div>
+    <div class="form-group">
+      <label for="password">Group Password</label>
+      <input name="password" type="password" class="form-control" id="password" placeholder="Enter password for group">
+    </div>
+    <div class="form-group">
+      <label for="confirm-password">Confirm Password</label>
+      <input type="password" class="form-control" id="confirm-password" placeholder="Enter password for group">
+    </div>
+    <button type="submit" class="btn btn-default" id="submit">Submit</button>
+  </form>
+</div>
+
+<script type="text/javascript">
+  /*$( '#submit' ).on('click', function (e) {
+      e.preventDefault();
+      var password = document.getElementById('password');
+      var confirm_password = document.getElementById('confirm-password');
+
+      if(!(password.value === confirm_password.value)) { //passwords didn't match
+        password.value = "";
+        confirm_password.value = "";
+        var bad_password = document.getElementById('bad-password');
+        bad_password.innerHTML = "Passwords Did Not Match";
+        bad_password.style.color = "red";
+      }
+      else {
+        var group_info = {
+            user_id: "{{ user_id }}",
+            group_name: document.getElementById('groupname').value,
+            password: password.value
+        }
+        $.ajax({
+            type: "post",
+            url: '/create_group',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(group_info),
+            //dataType: "json",
+            success: function(response) {
+                alert('hi');
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+            } 
+        });
+
+      }
+  });*/
+</script>
