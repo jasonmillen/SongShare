@@ -1,18 +1,79 @@
-<div class="page-header">
-<h3> Welcome to Song Share </h3>
-</div>
+<style>
+
+body, html {
+  margin: 0;
+  overflow: hidden;
+  height:100%;
+}
+
+@media (min-width: 768px){
+  #left {
+    position: absolute;
+    top: 60px;
+    bottom: 0;
+    left: 0;
+    width: 25%;
+    overflow-y: scroll; 
+  }
+  
+  #right {
+    position: absolute;
+    top: 60px;
+    bottom: 0;
+    right: 0;
+    overflow-y: scroll;
+    width: 75%;
+  }
+}
+
+#left {
+  background-color: #fdffc9;
+  text-align: center;
+  height:100%;
+}
+
+#right {
+  height:100%;
+  background-color: #dee0e2;
+  text-align: center;
+}
+
+</style>
+
 
 <div class="user">
 	{{#if user_info.id}}
-		<div> Logged in as {{ user_info.id }} </div>
-
-		<a href="/create_group" class="btn btn-primary">Create New Group</a>
-
 		{{#if groups}}
-			<div> You have groups: </div>
-			{{#each groups}}
-				<div> {{this.name}} </div>
-			{{/each}}
+			<div class="col-sm-4" id="left">
+				{{#each groups}}
+					<a href="#">
+						<div class="groupTab">
+							<hr style="border: 1px solid #f00">
+							{{this.name}} <br>
+							Group Image <br>
+							Other Stuff <br>
+						</div>
+					</a>
+					<a href="#">
+						<div>
+							<hr style="border: 1px solid #f00">
+							{{this.name}} <br>
+							Group Image <br>
+							Other Stuff <br>
+						</div>
+					<a href="#">
+						<div>
+							<hr style="border: 1px solid #f00">
+							{{this.name}} <br>
+							Group Image <br>
+							Other Stuff <br>
+						</div>
+					</a>
+				{{/each}}
+			</div>
+
+			<div class="col-sm-8" id="right">
+			</div>
 
 		{{else}}
 			<div> You have no groups right now </div>
@@ -23,3 +84,16 @@
 		<a href="/login" class="btn btn-primary">Login</a>
 	{{/if}}
 </div>
+
+<script>
+	
+
+
+</script>
+
+
+
+
+
+
+
