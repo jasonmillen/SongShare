@@ -17,8 +17,15 @@ var user_info = {
 	id: null,
 	access_token: null,
 	refresh_token: null,
-	name: null
-}
+	name: null,
+    country: null,
+    email: null,
+    href: null,
+    images: [],
+    product: null,
+    type: null,
+    user: null
+};
 
 /**
  * Generates a random string containing numbers and letters
@@ -84,6 +91,7 @@ app.get('/logout', function(req, res) {
 	user_info.access_token = null;
 	user_info.refresh_token = null;
 	user_info.name = null;
+
 	res.redirect('/');
 });
 
@@ -97,7 +105,15 @@ app.get('/finish_login', function(req, res) {
 
     request.get(options, function(error, response, body) {
     	user_info.id = body.id;
-    	user_info.name = body.name;
+    	user_info.name = body.display_name;
+        user_info.country = body.country;
+        user_info.email = body.email;
+        user_info.href = body.href;
+        user_info.images = body.images;
+        user_info.product = body.product;
+        user_info.type = body.type;
+        user_info.uri = body.uri;
+
     	console.log(body);
     	res.redirect('/');
     	console.log('done');
@@ -298,6 +314,18 @@ app.get('/', function (req, res) {
         });
     }
 
+});
+
+app.get('/myprofile', function (req, res) {
+    if(user_info.id == null) {
+        res.redirect('/');
+    }
+    else {
+        var data = {
+            user_info: user_info
+        };
+        res.render('myprofile', data);
+    }
 });
 
 app.get('/search', function (req, res) {

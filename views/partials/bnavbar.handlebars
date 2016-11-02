@@ -1,18 +1,25 @@
 <nav class="navbar navbar-default">
   <div class="container-fluid">
     <div class="navbar-header">
-      <a class="navbar-brand" href="#">Song Share</a>
+      <a class="navbar-brand" href="/">Song Share</a>
     </div>
-    <ul class="nav navbar-nav">
-      <li class="active"><a href="/">Home</a></li>
+    <ul class="nav navbar-nav navbar-left">
       <li><a href="/search">Search</a></li>
       <li><a href="/about">About</a></li>
-      {{#if id}}
+      <li><a href="/test">Test</a></li>
+      {{#if user_info.id}}
+        <li><a href="/myprofile">Profile</a></li>
         <li><a href="/logout">Logout</a></li>
       {{else}}
         <li><a href="/login">Login</a></li>
       {{/if}}
-      <li><a href="/test">Test</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      {{#if user_info.id}}
+        <li><a href="/logout">Logout</a></li>
+      {{else}}
+        <li><a href="/login">Login</a></li>
+      {{/if}}
     </ul>
   </div>
 </nav>
