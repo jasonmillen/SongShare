@@ -7,18 +7,11 @@
       <li><a href="/search">Search</a></li>
       <li><a href="/about">About</a></li>
       <li><a href="/test">Test</a></li>
-      {{#if user_info.id}}
-        <li><a href="/myprofile">Profile</a></li>
-        <li><a href="/logout">Logout</a></li>
-      {{else}}
-        <li><a href="/login">Login</a></li>
-      {{/if}}
     </ul>
     <ul class="nav navbar-nav navbar-right">
       {{#if user_info.id}}
+        <li><a href="/myprofile">{{user_info.id}}</a></li>
         <li><a href="/logout">Logout</a></li>
-      {{else}}
-        <li><a href="/login">Login</a></li>
       {{/if}}
     </ul>
   </div>
