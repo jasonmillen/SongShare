@@ -336,6 +336,41 @@ app.get('/about', function (req, res) {
 	res.render('about');
 });
 
+app.get('/groupData', function (req, res) {
+    var groupName = req.query.groupName;
+    var groupId = req.query.groupId;
+
+    var MongoClient = mongodb.MongoClient;
+
+    MongoClient.connect(mongodbURL, function (err, db) {
+        if(err) {
+            console.log('unable to connect to the server', err);
+        }
+        else {
+            console.log('Connection established');
+
+            var collection = db.collection('groupMessages');
+
+            collection.find({groupId: groupId}).toArray(function (err, result) {
+                if(err) {
+                    res.send(err);
+                }
+                else if (result.length) {
+                    var messages = result[0].messages;
+                    console.log(messages);
+                    res.send(messages);
+                }
+                else {
+                    res.send('no documents found');
+                }
+
+                db.close();
+            });
+        }
+    });
+
+});
+
 app.get('/thelist', function (req, res) {
 	var MongoClient = mongodb.MongoClient;
 	var url = 'mongodb://localhost:27017/sampsite';
@@ -354,7 +389,7 @@ app.get('/thelist', function (req, res) {
 					res.send(err);
 				}
 				else if (result.length) {
-					res.send(result);
+					return res.send(result);
 				}
 				else {
 					res.send('no documents found');
