@@ -54,24 +54,6 @@ body, html {
 							Other Stuff <br>
 						</div>
 					</a>
-					<script type="text/javascript">
-
-					</script>
-					<a href="#">
-						<div>
-							<hr style="border: 1px solid #f00">
-							{{this.name}} <br>
-							Group Image <br>
-							Other Stuff <br>
-						</div>
-					<a href="#">
-						<div>
-							<hr style="border: 1px solid #f00">
-							{{this.name}} <br>
-							Group Image <br>
-							Other Stuff <br>
-						</div>
-					</a>
 				{{/each}}
 			</div>
 
@@ -89,6 +71,48 @@ body, html {
 </div>
 
 <script>
+
+	function getGroupData(parameters) {
+		$.get('/groupData', parameters, function (data) {
+			console.log(data);
+			var groupDataElem = document.getElementById('right');
+			$( groupDataElem ).empty();
+
+			for(var i = 0; i < data.length; i++) {
+				var message = document.createElement('div');
+				message.innerHTML = data[i].message;
+
+				if(data[i].type == "track") {
+					var track = document.createElement('iframe');
+					track.src = "https://embed.spotify.com/?uri=spotify:track:" + data[i].trackId;
+					track.id = "song";
+					track.style.width = "300px";
+					track.style.height = "80px";
+					track.frameborder = "0";
+					track.allowtransparency = "true";
+					message.appendChild(track);
+				}
+
+				var hr = document.createElement('hr');
+				hr.style.border = "1px solid #f00";
+				groupDataElem.appendChild(hr);
+				groupDataElem.appendChild(message);
+			}
+			var hr = document.createElement('hr');
+			hr.style.border = "1px solid #f00";
+			groupDataElem.appendChild(hr);
+
+		});
+	}
+
+	if("{{user_info.most_recent_home_group}}") {
+		var parameters = {
+			groupName: "{{user_info.most_recent_home_group.groupName}}",
+			groupId: "{{user_info.most_recent_home_group.groupId}}"
+		};
+		getGroupData(parameters);
+	}
+
 	var groupTabs = document.getElementsByClassName("groupTab");
 	for(var i = 0; i < groupTabs.length; i++) {
 		$( groupTabs[i] ).on('click', function() {
@@ -100,36 +124,7 @@ body, html {
 				groupName: groupName,
 				groupId: groupId
 			};
-
-			$.get('/groupData', parameters, function (data) {
-				console.log(data);
-				var groupDataElem = document.getElementById('right');
-
-				for(var i = 0; i < data.length; i++) {
-					var message = document.createElement('div');
-					message.innerHTML = data[i].message;
-
-					if(data[i].type == "track") {
-						var track = document.createElement('iframe');
-						track.src = "https://embed.spotify.com/?uri=spotify:track:" + data[i].trackId;
-						track.id = "song";
-						track.style.width = "300px";
-						track.style.height = "80px";
-						track.frameborder = "0";
-						track.allowtransparency = "true";
-						message.appendChild(track);
-					}
-
-					var hr = document.createElement('hr');
-					hr.style.border = "1px solid #f00";
-					groupDataElem.appendChild(hr);
-					groupDataElem.appendChild(message);
-				}
-				var hr = document.createElement('hr');
-				hr.style.border = "1px solid #f00";
-				groupDataElem.appendChild(hr);
-
-			});
+			getGroupData(parameters);
 		});
 	}
 
