@@ -10,10 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
     "express-handlebars": "^3.0.0",
     "kerberos": "~0.0.17",
-    "mongodb": "~2.0.33",
+    "mongodb": "^2.0.55",
     "querystring": "^0.2.0",
     "request": "^2.75.0"
   }

@@ -7,6 +7,8 @@ var express = require('express');
 var request = require('request');
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
+var Db = require('mongodb').Db,
+    ObjectID = require('mongodb').ObjectID;
 
 var client_id = '4424b4c861ab4ebbba8c5a432253c2eb'; // Your client id
 var client_secret = 'bb5ae10bea384cea85639e2a8c4ec7c3'; // Your secret
@@ -355,7 +357,7 @@ app.get('/about', function (req, res) {
 
 app.get('/groupData', function (req, res) {
         var groupName = req.query.groupName;
-        var groupId = req.query.groupId;
+        var groupId = ObjectID(req.query.groupId);
 
         user_info.most_recent_home_group = {
             groupName: groupName,
@@ -371,16 +373,19 @@ app.get('/groupData', function (req, res) {
                 else {
                         console.log('Connection established in groupData');
 
-                        var collection = db.collection('groupMessages');
+                        //var collection = db.collection('groupMessages');
+                        var collection = db.collection('messages');
 
                         collection.find({groupId: groupId}).toArray(function (err, result) {
                                 if(err) {
                                         res.send(err);
                                 }
                                 else if (result.length) {
-                                        var messages = result[0].messages;
-                                        console.log(messages);
-                                        res.send(messages);
+                                        // var messages = result[0].messages;
+                                        // console.log(messages);
+                                        // res.send(messages);
+
+                                        res.send(result);
                                 }
                                 else {
                                         res.send('no documents found');

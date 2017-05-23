@@ -80,7 +80,7 @@ body, html {
 
 			for(var i = 0; i < data.length; i++) {
 				var message = document.createElement('div');
-				message.innerHTML = data[i].message;
+				message.innerHTML = data[i].content;
 
 				if(data[i].type == "track") {
 					var track = document.createElement('iframe');
