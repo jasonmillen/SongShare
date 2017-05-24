@@ -10,6 +10,8 @@ var cookieParser = require('cookie-parser');
 var Db = require('mongodb').Db,
     ObjectID = require('mongodb').ObjectID;
 
+var _ = require('underscore');
+
 var client_id = '4424b4c861ab4ebbba8c5a432253c2eb'; // Your client id
 var client_secret = 'bb5ae10bea384cea85639e2a8c4ec7c3'; // Your secret
 var redirect_uri = 'http://localhost:3000/callback'; // Your redirect uri
@@ -310,24 +312,68 @@ app.get('/', function (req, res) {
                                 console.log('unable to connect to server', err);
                         }
                         else {
-                                var collection = db.collection('groups');
-                                collection.find({}).toArray(function (err, result) {
-                                        if(err) {
-                                                res.send(err);
+                                // var collection = db.collection('groups');
+                                // collection.find({}).toArray(function (err, result) {
+                                //         if(err) {
+                                //                 res.send(err);
+                                //         }
+                                //         else if(result.length) {
+                                //                 var data = {
+                                //                         user_info: user_info,
+                                //                         groups: result
+                                //                 };
+                                //                 res.render('home', data);
+                                //         }
+                                //         else {
+                                //                 var data = {
+                                //                         user_info: user_info
+                                //                 };
+                                //                 res.render('home', data);
+                                //         }
+                                // });
+
+                                var collection_users = db.collection('users');
+                                collection_users.find({username: user_info.id}).toArray(function (err, result) {
+                                    if(err) {
+                                        res.send(err);
+                                    }
+                                    else if(result.length != 1) {
+                                        res.send('problem finding user in database');
+                                    }
+                                    else if(result[0].groups.length == 0) {
+                                        var data = {
+                                            user_info: user_info
+                                        };
+                                        res.render('home', data);
+                                    }
+                                    else {
+                                        var groupIds = result[0].groups;
+                                        var groups = [];
+
+                                        var finished = _.after(result.length, doRender);
+                                        var collection_groups = db.collection('groups');
+
+                                        for(var i = 0; i < groupIds.length; i++) {
+                                            collection_groups.findOne({_id: groupIds[i]}, function (err, result) {
+                                                if(err) {
+                                                    console.log(err);
+                                                }
+                                                else {
+                                                    groups.push(result);
+                                                    finished();
+                                                }
+                                            });
                                         }
-                                        else if(result.length) {
-                                                var data = {
-                                                        user_info: user_info,
-                                                        groups: result
-                                                };
-                                                res.render('home', data);
+
+                                        function doRender() {
+                                            var data = {
+                                                user_info: user_info,
+                                                groups: groups
+                                            };
+                                            res.render('home', data);
                                         }
-                                        else {
-                                                var data = {
-                                                        user_info: user_info
-                                                };
-                                                res.render('home', data);
-                                        }
+
+                                    }
                                 });
                         }
                 });

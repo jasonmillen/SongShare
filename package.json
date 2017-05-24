@@ -16,6 +16,7 @@
     "kerberos": "~0.0.17",
     "mongodb": "^2.0.55",
     "querystring": "^0.2.0",
-    "request": "^2.75.0"
+    "request": "^2.75.0",
+    "underscore": "^1.8.3"
   }
 }
