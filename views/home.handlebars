@@ -46,7 +46,7 @@ body, html {
 		{{#if groups}}
 			<div class="col-sm-4" id="left">
 				{{#each groups}}
-					<a href="#">
+					<a href="">
 						<div class="groupTab" data-name={{this.name}} data-id={{this._id}}>
 							<hr style="border: 1px solid #f00">
 							{{this.name}} <br>
@@ -79,10 +79,17 @@ body, html {
 			$( groupDataElem ).empty();
 
 			for(var i = 0; i < data.length; i++) {
-				var message = document.createElement('div');
-				message.innerHTML = data[i].content;
 
-				if(data[i].type == "track") {
+				var hr = document.createElement('hr');
+				hr.style.border = "1px solid #f00";
+				groupDataElem.appendChild(hr);
+
+				if(data[i].type == "text") {
+					var message = document.createElement('div');
+					message.innerHTML = data[i].content;
+					groupDataElem.appendChild(message);
+				}
+				else if(data[i].type == "track") {
 					var track = document.createElement('iframe');
 					track.src = "https://embed.spotify.com/?uri=spotify:track:" + data[i].trackId;
 					track.id = "song";
@@ -90,13 +97,12 @@ body, html {
 					track.style.height = "80px";
 					track.frameborder = "0";
 					track.allowtransparency = "true";
-					message.appendChild(track);
+					groupDataElem.appendChild(track);
+				}
+				else {
+					console.log('error');
 				}
 
-				var hr = document.createElement('hr');
-				hr.style.border = "1px solid #f00";
-				groupDataElem.appendChild(hr);
-				groupDataElem.appendChild(message);
 			}
 			var hr = document.createElement('hr');
 			hr.style.border = "1px solid #f00";

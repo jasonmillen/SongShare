@@ -29,7 +29,8 @@ var user_info = {
     product: null,
     type: null,
     user: null,
-    most_recent_home_group: null
+    most_recent_home_group: null,
+    groups: []
 };
 
 /**
@@ -97,6 +98,7 @@ app.get('/logout', function(req, res) {
     user_info.refresh_token = null;
     user_info.name = null;
     user_info.most_recent_home_group = null;
+    user_info.groups = null;
 
     res.redirect('/');
 });
@@ -204,7 +206,10 @@ app.get('/create_group', function (req, res) {
             res.redirect('/');
     }
     else {
-            res.render('create_group', user_info);
+            var data = {
+                user_info: user_info
+            };
+            res.render('create_group', data);
     }
 });
 
@@ -350,7 +355,7 @@ app.get('/', function (req, res) {
                                         var groupIds = result[0].groups;
                                         var groups = [];
 
-                                        var finished = _.after(result.length, doRender);
+                                        var finished = _.after(groupIds.length, doRender);
                                         var collection_groups = db.collection('groups');
 
                                         for(var i = 0; i < groupIds.length; i++) {
@@ -366,10 +371,13 @@ app.get('/', function (req, res) {
                                         }
 
                                         function doRender() {
+                                            user_info.groups = groups;
+
                                             var data = {
                                                 user_info: user_info,
                                                 groups: groups
                                             };
+
                                             res.render('home', data);
                                         }
 
@@ -394,14 +402,23 @@ app.get('/myprofile', function (req, res) {
 });
 
 app.get('/search', function (req, res) {
-    res.render('search');
+    var data = {
+        user_info: user_info,
+        access_token: user_info.access_token
+    };
+
+    res.render('search', data);
 });
 
 app.get('/about', function (req, res) {
-    res.render('about');
+    var data = {
+        user_info: user_info
+    };
+    res.render('about', data);
 });
 
 app.get('/groupData', function (req, res) {
+
         var groupName = req.query.groupName;
         var groupId = ObjectID(req.query.groupId);
 
@@ -426,16 +443,18 @@ app.get('/groupData', function (req, res) {
                                 if(err) {
                                         res.send(err);
                                 }
-                                else if (result.length) {
-                                        // var messages = result[0].messages;
-                                        // console.log(messages);
-                                        // res.send(messages);
+                                res.send(result);
+                                // else if (result.length) {
+                                //         console.log(result.length);
+                                //         // var messages = result[0].messages;
+                                //         // console.log(messages);
+                                //         // res.send(messages);
 
-                                        res.send(result);
-                                }
-                                else {
-                                        res.send('no documents found');
-                                }
+                                //         res.send(result);
+                                // }
+                                // else {
+                                //         res.send('no documents found');
+                                // }
 
                                 db.close();
                         });
@@ -443,6 +462,51 @@ app.get('/groupData', function (req, res) {
         });
 
 });
+
+
+app.post('/postSong', function (req, res) {
+
+    var groupId = req.body.groupId;
+    var trackId = req.body.trackId;
+
+    console.log('post song' + groupId + ", " + trackId);
+
+    var newTrack = {
+        senderId: user_info.id,
+        type: "track",
+        trackId: trackId,
+        upvotes: [],
+        date: new Date(),
+        groupId: ObjectID(groupId)
+    };
+
+    var MongoClient = mongodb.MongoClient;
+    MongoClient.connect(mongodbURL, function (err, db) {
+        if(err) {
+            console.log('error connecting to database');
+            res.send('error could not add song');
+        }
+        else {
+            console.log('connection established in postSong');
+
+            var collection = db.collection('messages');
+            collection.insert(newTrack, function (err, result) {
+                if(err) {
+                    console.log('could not add song');
+                    res.send('error could not add song');
+                }
+                else {
+                    res.send('song successfully added');
+                }
+
+                db.close();
+            });
+        }
+
+    });
+
+});
+
 
 app.get('/thelist', function (req, res) {
     var MongoClient = mongodb.MongoClient;

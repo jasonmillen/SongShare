@@ -1,7 +1,3 @@
-<!--<script src="/test.js"></script>
-<script src="/bundle.js"></script>
-<script src="/spotify-web-api.js"></script> -->
-
 <div class="container" class="form-horizontal" role="form"
 enctype="multipart/form-data">
   <h2>Search for a track</h2>
@@ -22,32 +18,95 @@ enctype="multipart/form-data">
 
 <iframe style="float:left;" id="song" src="https://embed.spotify.com/?uri=spotify:track:5JunxkcjfCYcY7xJ29tLai" frameborder="0" allowtransparency="true"></iframe>
 
+{{#if user_info.id}}
+
 <div style="float:left;" class="dropdown">
   <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
     Share With Group
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-    <li><a href="#">Action</a></li>
-    <li><a href="#">Another action</a></li>
-    <li><a href="#">Something else here</a></li>
+  {{#each user_info.groups}}
+    <li class="shareGroupButton" data-groupid={{this._id}}><a>{{this.name}}</a></li>
+  {{/each}}
   </ul>
 </div>
+{{/if}}
 
 <script type="text/javascript">
+
+  var currentTrackId = "5JunxkcjfCYcY7xJ29tLai";
+
   $('#search').on('click', function (e) {
     e.preventDefault();
+
     var searchString = "https://api.spotify.com/v1/search?q=";
     var artist = document.getElementById('artist').value;
     var track = document.getElementById('track').value;
     searchString += artist + "+" + track + "&type=track&limit=1";
 
-    $.get(searchString, function (data, status) {
-      var elem = document.getElementById('song');
-      elem.src = "http://embed.spotify.com/?uri=spotify:track:" + data.tracks.items[0].id;
+    // alert(searchString);
+    // alert("{{access_token}}");
+
+    // $.get(searchString, function (data, status) {
+    //   alert('blah');
+
+    //   var elem = document.getElementById('song');
+    //   elem.src = "http://embed.spotify.com/?uri=spotify:track:" + data.tracks.items[0].id;
+
+    // });
+
+    var Authorization = "Bearer {{access_token}}";
+
+    //alert(Authorization);
+
+    $.ajax({
+      url: searchString,
+      type: 'GET',
+      headers: {
+        'Authorization': Authorization,
+        'Content-Type': 'application/json'
+      },
+      success: function(data) {
+        var elem = document.getElementById('song');
+        if(data.tracks.items.length > 0)
+          elem.src = "http://embed.spotify.com/?uri=spotify:track:" + data.tracks.items[0].id;
+          currentTrackId = data.tracks.items[0].id;
+      },
+      error: function(error) {
+        console.log(error.status);
+      }
+    });
+
+  });
+
+  function addSong(parameters) {
+    console.log(parameters.groupId);
+    console.log(parameters.trackId);
+
+    $.post('/postSong', parameters, function(response) {
+      console.log(response);
+    });
+  }
+
+  var shareGroupButtons = document.getElementsByClassName('shareGroupButton');
+  for(var i = 0; i < shareGroupButtons.length; i++) {
+    $( shareGroupButtons[i] ).on('click', function() {
+      var $el = $(this);
+      // console.log($el);
+      // alert($el.data('groupid'));
+
+      var parameters = {
+        groupId: $el.data('groupid'),
+        trackId: currentTrackId
+      };
+
+      addSong(parameters);
 
     });
-  });
+  }
+
 
 
 </script>
+
