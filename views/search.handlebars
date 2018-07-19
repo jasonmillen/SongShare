@@ -75,6 +75,11 @@ enctype="multipart/form-data">
       },
       error: function(error) {
         console.log(error.status);
+
+        if(error.status == 401) {
+          alert('half to redirect? - token expired');
+          //redirect
+        }
       }
     });
 

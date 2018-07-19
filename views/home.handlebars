@@ -35,7 +35,13 @@ body, html {
 #right {
   height:100%;
   background-color: #dee0e2;
-  text-align: center;
+  text-align: left;
+}
+
+#footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
 }
 
 </style>
@@ -58,6 +64,16 @@ body, html {
 			</div>
 
 			<div class="col-sm-8" id="right">
+
+			<!--
+			<form>
+			  <div class="form-group">
+			    <label for="exampleTextarea">Example textarea</label>
+			    <textarea class="form-control" id="exampleTextarea" rows="3"></textarea>
+			  </div>
+			</form>
+			-->
+
 			</div>
 
 		{{else}}
@@ -107,6 +123,20 @@ body, html {
 			var hr = document.createElement('hr');
 			hr.style.border = "1px solid #f00";
 			groupDataElem.appendChild(hr);
+
+			// create text input form
+			var form = document.createElement('form');
+			form.id = 'footer';
+			//form.style.width = "100vw";
+			var div_form = document.createElement('div');
+			div_form.class = 'form-group';
+			var textarea = document.createElement('textarea');
+			textarea.class = 'form-control';
+			textarea.rows = 2;
+
+			div_form.appendChild(textarea);
+			form.appendChild(div_form);
+			groupDataElem.appendChild(form);
 
 		});
 	}
